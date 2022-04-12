@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = new mongoose.Schema({
-    cat_id:{
+    Cat_id:{
         type:String
     },
     StartDeadline:{

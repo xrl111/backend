@@ -129,7 +129,7 @@ app.post("/token", async (req, res) => {
     });
   }
 });    
-app.post("/register", AuthToken,
+app.post("/register",
     async (req, res)=>{
         const Yourname = req.body.Yourname;
         const Email = req.body.Email;
@@ -142,8 +142,8 @@ app.post("/register", AuthToken,
             if(user){
                 return res.status(400).json({
                     success: false,
-                    Username: user.Username, 
-                    msg: "The username already exists",
+                    Email: user.Email, 
+                    msg: "The Email already exists",
                 })
             }
             else{
@@ -292,14 +292,16 @@ app.put("/dislikef", async(req,res)=>{
 
 //set date time route
 app.post("/datetime",async(req,res)=>{
-    const StartDeadline = req.body.StartDeadline;
+    const Cat_id= req.body.Cat_id;
+    const StartDeadline = Date.now();
     const EndDeadline = req.body.EndDeadline;
-    const StartComment = req.body.StartComment;
+    const StartComment = Date.now();
     const EndComment = req.body.EndComment;
     if (StartDeadline>EndDeadline||StartComment>EndComment||StartComment<StartDeadline||StartComment>EndDeadline){
-       console.log('sai dcmdsakdjas!!!');
+       console.log('Wrong datetime!!!');
     }else{
         const datetime = new DatetimeModel({
+        Cat_id:Cat_id,
         StartDeadline:StartDeadline,
         EndDeadline:EndDeadline,
         StartComment:StartComment,
@@ -316,15 +318,24 @@ app.post("/datetime",async(req,res)=>{
 
 //set category
 app.post('/NewCategory' ,async(req,res)=>{
-    const cat = req.body.cat
-    const iscat = await CatModel.findOne({cat})
-    if (iscat){
-        console.log("da co cat!!")
-    }else{
-        const cat1 = new CatModel({cat_name:cat})
-        console.log(cat1)
-        cat1.save();
-    }
+    const check = await CatModel.findOne({cat_name:req.body.cat_name})
+    if (!check){
+        const cat = new CatModel({cat_name:req.body.cat_name})
+        try{
+           await cat.save();
+        }catch(e) {
+            console.log(e)
+        }
+    } 
+})
+
+app.get('/AllCategory', async(req,res)=>{
+    CatModel.find({},(err,result)=>{
+        if (err){
+            res.send(err)
+        }
+        res.send(result)
+    })
 })
 app.listen(3001,() =>{
     console.log('Server running on port 3001...');
